@@ -7,6 +7,7 @@ using namespace std;
 struct Point{
 	int x,y;
 };
+bool inQueue[101];
 vector<int> Edges[101];
 int n,m,s,t;
 double E[101][101];
@@ -45,12 +46,16 @@ void spfa(int s){
 	d[s]=0;
 	queue<int> q;
 	q.push(s);
+	inQueue[s]=true;
 	while(!q.empty()){
 		int t1=q.front(),t2=0;q.pop();
+		inQueue[t1]=false;
 		for(int i=0;i<Edges[t1].size();i++){
 			t2=Edges[t1][i];
-			if(relax(t1,t2))
+			if(relax(t1,t2) && !inQueue[t2]){
 				q.push(t2);
+				inQueue[t2]=true;
+			}
 		}
 	}
 }
