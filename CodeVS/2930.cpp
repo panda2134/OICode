@@ -6,8 +6,8 @@ using namespace std;
 struct StuUni{
 	int stu,uni;
 };
-int cnt, n, m, ki, lnk1[5101], lnk2[1101];
-bool vis[5101], f[1101][5101], wantStudents[5101];
+int cnt, n, m, ki, lnk1[5101], lnk2[5101];
+bool vis[5101], f[5101][5101], wantStudents[5101];
 StuUni stu[5010];
 bool Hungarian(int);
 bool cmp(const StuUni & a,const StuUni & b){
