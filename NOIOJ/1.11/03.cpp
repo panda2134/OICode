@@ -4,7 +4,6 @@ struct Rectangle {
 	long long x, y;
 	long long w, h;
 };
-//TODO:long long->long long
 long long r, n, ans;
 Rectangle rect[10010];
 inline long long pd(long long x) {
