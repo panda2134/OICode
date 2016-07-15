@@ -1,5 +1,3 @@
-//THIS VERSION DOES NOT WORK:YOU MUST BISEARCH THE ANGLE INSTEAD OF THE RADIUS,BECAUSE OF THE F**KING EPS.
-//TODO:WRITE ANOTHER VERSION THAT WORKS...
 #include <cstdio>
 #include <cmath>
 const double EPS=1e-12;
@@ -32,9 +30,13 @@ double bisearch(double i,double j){
 }
 int main(){
 	scanf("%lf%lf%lf",&l,&n,&c);
+	if(l*n*c<=EPS){
+		printf("0.00\n");
+		return 0;
+	}
 	l_arc=(1+n*c)*l;
 	double r=bisearch(0,1e14);
-	printf("r=%lf\n",r);
+	//printf("r=%lf\n",r);
 	double h=sqrt(r*r-(l/2)*(l/2));
 	double ans=r-h;
 	printf("%.3lf",ans);

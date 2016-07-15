@@ -24,8 +24,10 @@ double bisearch(double i,double j) {
 int main() {
 	scanf("%lf%lf%lf",&l,&n,&c);
 	l_arc=(1+n*c)*l;
-	if(l*n*c<=EPS)
+	if(l*n*c<=EPS){
 		printf("0.000\n");
+		//return 0;
+	}
 	double angle=bisearch(0.0,90.0);
 	double sinAngle=sin(angle*M_PI/180.0);
 	double r=(l/2)/sinAngle;
