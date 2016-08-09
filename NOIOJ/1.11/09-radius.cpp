@@ -17,7 +17,7 @@ double bisearch(double i,double j){
 	if(chk(m))//<=
 		return bisearch(i,m);
 	else//>
-		return bisearch(m+EPS,j);
+		return bisearch(m,j);
 	/*while(!equal(i,j)){
 		
 		double m=(i+j)/2;
