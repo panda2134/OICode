@@ -1,4 +1,6 @@
+//BUGGY!
 #include <iostream>
+#include <cassert>
 #define mid(x,y) ((x+y)>>1)
 using namespace std;
 int n,m,a[100100],tree[500000];
@@ -10,9 +12,11 @@ int build_tree(int o,int l,int r){
 }
 int query(int o,int l,int r,int i,int j){
 	if(l>=i && r<=j) return tree[o];
-	if(i<=mid(l,r) && j<=mid(l,r)) return query(o*2,l,mid(l,r),i,j);
-	if(i>mid(l,r) && j>mid(l,r)) return query(o*2+1,mid(l,r)+1,r,i,j);
-	if(i<=mid(l,r) && j>mid(l,r)) return query(o*2,l,mid(l,r),i,mid(l,r))+query(o*2+1,mid(l,r)+1,r,mid(l,r)+1,j);
+	int ret=0;
+	if(i<=mid(l,r)) ret+=query(o*2,l,mid(l,r),i,j);
+	if(j>=mid(l,r)+1) ret+=query(o*2+1,mid(l,r)+1,r,i,j);
+	return ret;
+	
 }
 void modify(int o,int l,int r,int d,int val){
 	if(l==r){tree[o]+=val;return;}
