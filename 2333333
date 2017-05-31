@@ -1,0 +1,62 @@
+#include<iostream>
+#include<cstring>
+#include<vector>
+#include<utility>
+#define CLEAR(x) memset(x,0,sizeof(x))
+using namespace std;
+typedef vector<pair<int,int> > VP;
+int n,cz=1,cube[100][5];
+int opt[100][5];
+VP Adj[100][5];
+int inline getX(int i,int h){
+	if(h==0) return cube[i][1];
+	return cube[i][0];
+}
+int inline getY(int i,int h){
+	if(h==2) return cube[i][1];
+	return cube[i][2];
+}
+bool inline bigger(int i,int j,int k,int l){
+	int x1=getX(i,j),y1=getY(i,j),
+		x2=getX(i,j),y2=getY(i,j);
+	return x1>=x2 && y1>=y2 && !(x1==y1 && x2==y2);
+}
+bool init(){
+	CLEAR(cube);CLEAR(opt);
+	for(int i=1;i<=n;i++)
+		for(int j=0;j<3;j++)
+			Adj[i][j].clear();
+	if(!(cin>>n)) return false;
+	for(int i=1;i<=n;i++)
+		cin>>cube[i][0]>>cube[i][1]>>cube[i][2];
+	for(int i=1;i<=n;i++)
+		for(int j=0;j<3;j++)
+			for(int k=1;k<=n;k++)
+				for(int l=0;l<3;l++){
+					if(bigger(i,j,k,l)){
+						Adj[i][j].push_back(make_pair(k,l));
+					}
+				}
+	return true;
+}
+int dp(int idx,int h){
+	if(opt[idx][h]) return opt[idx][h];
+	VP& a=Adj[idx][h];
+	for(int i=0;i<a.size();i++)
+		opt[idx][h]=max(opt[idx][h],dp(a[i].first,a[i].second)+1);
+	return opt[idx][h];
+}
+void work(){
+	int ans=0;
+	for(int i=1;i<=n;i++){
+		ans=max(ans,dp(i,0));
+		ans=max(ans,dp(i,1));
+		ans=max(ans,dp(i,2));
+	}
+	cout<<"Case "<<cz++<<": maximum height = "<<ans<<endl;
+}
+int main(){
+	while(init())
+		work();
+	return 0;
+}
