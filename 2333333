@@ -26,7 +26,7 @@ bool init(){
 	for(int i=1;i<=n;i++)
 		for(int j=0;j<3;j++)
 			Adj[i][j].clear();
-	if(!(cin>>n)) return false;
+	if(!(cin>>n,n)) return false;
 	for(int i=1;i<=n;i++)
 		cin>>cube[i][0]>>cube[i][1]>>cube[i][2];
 	for(int i=1;i<=n;i++)
