@@ -18,8 +18,9 @@ int inline getY(int i,int h){
 }
 bool inline bigger(int i,int j,int k,int l){
 	int x1=getX(i,j),y1=getY(i,j),
-		x2=getX(i,j),y2=getY(i,j);
-	return x1>=x2 && y1>=y2 && !(x1==y1 && x2==y2);
+		x2=getX(k,l),y2=getY(k,l);
+	//cout<<x1<<" "<<x2<<" "<<y1<<" "<<y2<<endl;
+	return x1>x2 && y1>y2;
 }
 bool init(){
 	CLEAR(cube);CLEAR(opt);
@@ -33,17 +34,20 @@ bool init(){
 		for(int j=0;j<3;j++)
 			for(int k=1;k<=n;k++)
 				for(int l=0;l<3;l++){
-					if(bigger(i,j,k,l)){
+					if((i!=k || (i==k&&j!=l)) && bigger(i,j,k,l)){
 						Adj[i][j].push_back(make_pair(k,l));
 					}
 				}
 	return true;
 }
 int dp(int idx,int h){
+	cout<<"id:"<<idx<<" "<<h<<endl;
 	if(opt[idx][h]) return opt[idx][h];
 	VP& a=Adj[idx][h];
-	for(int i=0;i<a.size();i++)
-		opt[idx][h]=max(opt[idx][h],dp(a[i].first,a[i].second)+1);
+	for(int i=0;i<a.size();i++){
+		cout<<"= ="<<a[i].first<<" "<<a[i].second<<endl;
+		opt[idx][h]=max(opt[idx][h],dp(a[i].first,a[i].second)+cube[idx][i]);
+	}
 	return opt[idx][h];
 }
 void work(){
