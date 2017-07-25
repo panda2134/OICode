@@ -4,8 +4,8 @@
 #include<vector>
 using namespace std;
 struct BigInteger{
-	static const int MOD=100000000;
-	static const int WIDTH=8;
+	static const int MOD=10000;
+	static const int WIDTH=4;
 	vector<int> v;
 	void Clear(){
 		while(v.back()==0 && v.size()>1) v.pop_back();
@@ -42,13 +42,13 @@ struct BigInteger{
 		return *this;
 	}
 	BigInteger operator=(const char* str){
-		*this=string(str);
+		return *this=string(str);
 	}
 	friend ostream& operator<<(ostream& out,const BigInteger& x){
 		out<<x.v.back(); //the zeros in the front CANNOT be printed
 		for(int i=x.v.size()-2;i>=0;i--){
 			char buf[20];
-			sprintf(buf,"%08d",x.v[i]); //zeros cannot be omitted
+			sprintf(buf,"%04d",x.v[i]); //zeros cannot be omitted
 			for(int j=0;j<strlen(buf);j++) out<<buf[j]; //NOT COUT!!!!!!!!!!!
 		}
 		return out;
@@ -61,7 +61,7 @@ struct BigInteger{
 	}
 	BigInteger operator+(const BigInteger& b) {
 		BigInteger c;
-		c.v.clear();
+		c.v.clear(); //not c.Clear()
 		for(int i=0,g=0;;i++){
 			int x=g;
 			if(g==0 && i>=v.size() && i>=b.v.size()) break;
@@ -90,12 +90,37 @@ struct BigInteger{
 		Clear();
 		return c;
 	}
+	BigInteger operator*(const BigInteger& b) {
+		BigInteger c;
+		vector<int> tmp[1010];
+		for(int i=0;i<v.size()+b.v.size();i++)
+			c.v.push_back(0);
+		for(int i=0;i<b.v.size();i++)
+			for(int j=0,g=0;;j++){
+				int x=g;
+				if(g==0 && j>=v.size()) break;
+				if(j<v.size()) x+=v[j]*b.v[i]; 
+				tmp[i].push_back(x%MOD);
+				g=x/MOD;
+			}
+		for(int i=0;i<b.v.size();i++)
+			for(int j=0;j<tmp[i].size();j++)
+				c.v[i+j]+=tmp[i][j];
+		for(int i=0,g=0;;i++){
+			if(g==0 && i>=v.size()+b.v.size()) break;
+			c.v[i]+=g;
+			g=c.v[i]/MOD;
+			c.v[i]%=MOD;
+		}
+		c.Clear();
+		return c;
+	}				
 }; 
 int main(){
 	char s1[1010],s2[1010];
 	cin.getline(s1,1000,'\n');
 	cin.getline(s2,1000,'\n');
 	BigInteger x=s1,y=s2;
-	cout<<x+y;
+	cout<<x*y;
 	return 0;
 }
