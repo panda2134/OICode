@@ -1,126 +1,144 @@
-#include<iostream>
-#include<cstdio>
-#include<cstring>
-#include<vector>
+#include <bits/stdc++.h>
 using namespace std;
-struct BigInteger{
-	static const int MOD=10000;
-	static const int WIDTH=4;
-	vector<int> v;
-	void Clear(){
-		while(v.back()==0 && v.size()>1) v.pop_back();
+struct BigInteger {
+	static const int MOD = 10000;
+	static const int WIDTH = 4;
+	static const int MAXL = 1000;
+	int v[MAXL+10],sz;
+	void Clear() {
+		while(sz>1 && v[sz-1]==0) sz--;
 	}
-	BigInteger(){v.push_back(0);}; 
-	BigInteger(unsigned long long num){
-		*this=num;
+	BigInteger(){
+		sz=0;v[sz++]=0;
 	}
-	BigInteger(const char* str){
-		*this=string(str);
-	}
-	BigInteger operator=(unsigned long long num){
-		v.clear(); //important
-		do{
-			int x=num%MOD;
-			num/=MOD;
-			v.push_back(x);
-		}while(num>0); //Push a zero when num==0
-		Clear();
-		return *this;
-	}
-	BigInteger operator=(const string & str){
-		v.clear(); //important
-		int x,len = (str.length()-1) / WIDTH + 1; //12345678|,12345678|9,1234567| check it by hand
-		//see note
-		for(int i=0;i<len;i++){
-			int end=str.length()-i*WIDTH;
-			int start=max(0,end-WIDTH);
-			sscanf(str.substr(start,end-start).c_str(),"%d",&x);
-			//substr(int start,int len)
-			v.push_back(x); 
+	BigInteger operator=(const string& str){
+		sz=0;
+		int len=str.length()/WIDTH + (bool)str.length()%WIDTH;
+		for(int i=1;i<=len;i++){//1|2345|6789
+			int end=str.length()-(i-1)*WIDTH;
+			int start=max(0,(int)str.length()-i*WIDTH);
+			v[sz++]=atoi(str.substr(start,end-start).c_str());
 		}
 		Clear();
 		return *this;
 	}
-	BigInteger operator=(const char* str){
+	BigInteger operator=(unsigned long long x){
+		sz=0;
+		do{
+			v[sz++]=x%MOD;
+			x/=MOD;
+		}while(x!=0);
+		Clear();
+		return *this;
+	}
+	BigInteger operator=(const char *str){
 		return *this=string(str);
 	}
-	friend ostream& operator<<(ostream& out,const BigInteger& x){
-		out<<x.v.back(); //the zeros in the front CANNOT be printed
-		for(int i=x.v.size()-2;i>=0;i--){
-			char buf[20];
-			sprintf(buf,"%04d",x.v[i]); //zeros cannot be omitted
-			for(int j=0;j<strlen(buf);j++) out<<buf[j]; //NOT COUT!!!!!!!!!!!
-		}
-		return out;
+	BigInteger(const string& str){
+		*this=str;
 	}
-	friend istream& operator>>(istream& in,BigInteger& x){
-		string s;
-		if(!(in>>s)) return in;
-		x=s;
-		return in;
+	BigInteger(unsigned long long x){
+		*this=x;
 	}
-	BigInteger operator+(const BigInteger& b) {
+	BigInteger(const char *str){
+		*this=str;
+	}
+	
+	BigInteger operator+(const BigInteger& b){
 		BigInteger c;
-		c.v.clear(); //not c.Clear()
+		c.sz=0;
 		for(int i=0,g=0;;i++){
 			int x=g;
-			if(g==0 && i>=v.size() && i>=b.v.size()) break;
-			if(i<v.size()) x+=v[i];
-			if(i<b.v.size()) x+=b.v[i];
-			c.v.push_back(x%MOD);
+			if(g==0 && i>=sz && i>=b.sz) break;
+			if(i<sz) x+=v[i];
+			if(i<b.sz) x+=b.v[i];
+			c.v[c.sz++]=x%MOD;
 			g=x/MOD;
-		}
-		this->Clear();
-		return c;
-	}
-	BigInteger operator+=(BigInteger &b){
-		return *this=*this+b;
-	}
-	BigInteger operator-(const BigInteger& b) {
-		BigInteger c;
-		c.v.clear();
-		for(int i=0,g=0;;i++){
-			int x=g;
-			if(g==0 && i>=v.size() && i>=b.v.size()) break;
-			if(i<v.size()) x+=v[i];
-			if(i<b.v.size()) x-=b.v[i];
-			c.v.push_back(x%MOD);
-			g=x/MOD;
-		}
-		Clear();
-		return c;
-	}
-	BigInteger operator*(const BigInteger& b) {
-		BigInteger c;
-		vector<int> tmp[1010];
-		for(int i=0;i<v.size()+b.v.size();i++)
-			c.v.push_back(0);
-		for(int i=0;i<b.v.size();i++)
-			for(int j=0,g=0;;j++){
-				int x=g;
-				if(g==0 && j>=v.size()) break;
-				if(j<v.size()) x+=v[j]*b.v[i]; 
-				tmp[i].push_back(x%MOD);
-				g=x/MOD;
-			}
-		for(int i=0;i<b.v.size();i++)
-			for(int j=0;j<tmp[i].size();j++)
-				c.v[i+j]+=tmp[i][j];
-		for(int i=0,g=0;;i++){
-			if(g==0 && i>=v.size()+b.v.size()) break;
-			c.v[i]+=g;
-			g=c.v[i]/MOD;
-			c.v[i]%=MOD;
 		}
 		c.Clear();
 		return c;
-	}				
-}; 
+	}
+	
+	BigInteger operator-(const BigInteger& b){
+		BigInteger c;c.sz=0;
+		for(int i=0,g=0;;i++){
+			int x=g;
+			if(g==0 && i>=sz && i>=b.sz) break;
+			if(i<sz) x+=v[i];
+			if(i<b.sz) x-=b.v[i];
+			c.v[c.sz++]=(x+MOD)%MOD;
+			g=x/MOD-(x<0);
+		}
+		c.Clear();
+		return c;
+	}
+	
+	
+	BigInteger operator*(const BigInteger& b){
+		static int tmp[MAXL+10][MAXL+10],pos[MAXL+10];
+		//STATIC !!!!!!!!!!!!
+		BigInteger c;c.sz=sz+b.sz;
+		memset(c.v,0,sizeof(c.v));
+		memset(tmp,0,sizeof(tmp));
+		memset(pos,0,sizeof(pos));
+		for(int i=0;i<b.sz;i++)
+			for(int j=0,g=0;;j++){
+				int x=g;
+				if(g==0 && j>=sz) break;
+				if(j<sz) x+=v[j]*b.v[i];
+				g=x/MOD;
+				tmp[i][pos[i]++]=x%MOD;
+			}
+		for(int i=0;i<b.sz;i++)
+			for(int j=0;j<pos[i];j++)
+				c.v[i+j]+=tmp[i][j];
+		for(int i=0,g=0;;i++){
+			int x=g;
+			if(g==0 && i>=sz+b.sz) break;
+			if(i<sz+b.sz) x+=c.v[i];
+			g=x/MOD;
+			c.v[i]=x%MOD;
+		}
+		c.Clear();
+		return c;
+	}
+	friend istream& operator>>(istream& in,BigInteger& b){
+		static char tmp[MAXL*WIDTH];
+		if(!(in>>tmp)) return in;
+		b=tmp;return in;
+	}
+	friend ostream& operator<<(ostream& out,const BigInteger& b){
+		out<<b.v[b.sz-1];
+		static char tmp[MAXL*WIDTH];
+		for(int i=b.sz-2;i>=0;i--){
+			sprintf(tmp,"%04d",b.v[i]);
+			out<<tmp;
+		}
+		return out;
+	}
+	bool operator<(const BigInteger& b)const{
+		if(sz<b.sz) return true;
+		if(sz>b.sz) return false;
+		for(int i=sz-1;i>=0;i--){
+			if(v[i]>b.v[i]) return false;
+			if(v[i]<b.v[i]) return true;
+			if(v[i]==b.v[i]) continue;
+		}
+		return false;
+	}
+	bool operator>(const BigInteger& b)const{
+		if(sz>b.sz) return true;
+		if(sz<b.sz) return false;
+		for(int i=sz-1;i>=0;i--){
+			if(v[i]<b.v[i]) return false;
+			if(v[i]>b.v[i]) return true;
+			if(v[i]==b.v[i]) continue;
+		}
+		return false;
+	}
+	bool operator==(const BigInteger& b)const{
+		return !(*this<b) && !(*this>b);
+	}
+};
 int main(){
-	char s1[1010],s2[1010];
-	cin.getline(s1,1000,'\n');
-	cin.getline(s2,1000,'\n');
-	BigInteger x=s1,y=s2;
-	cout<<x*y;
-	return 0;
 }
