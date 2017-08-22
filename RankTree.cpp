@@ -64,7 +64,6 @@ Node* find(Node* o,int x){
     else return find(o->ch[d],x);
 }
 void delnode(Node* &o,int x){
-    assert(o!=NULL);//in delnode
     int d=o->cmp(x);
     if(d==-1) {    
         if(o->cnt > 1) {
